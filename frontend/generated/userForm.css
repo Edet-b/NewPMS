@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+
+.BackToUsers{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: #1434A4;
+    margin-bottom: -10px;
+}
+
+H3{
+    font-family: 'Josefin Sans', sans-serif;
+    text-transform: none;
+    font-size: 20px;
+    font-weight: 400;
+    margin-top: 15px;
+    margin-bottom: 0px;
+}
+
+.MainLayoutUsers{
+    width: 100% !important;
+}
+
+.UsersSave{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    background-color: #1434A4 !important;
+    color: white !important;
+    margin-top: 5px;
+    margin-left: auto;
+    margin-left: 0px;
+}
+
+.UsersDiscard{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    color: #FF1400;
+    background-color: #EFEFEF;
+    margin-top: 5px;
+    margin-left: auto;
+}
+
+/*.UserButtonLayout{
+    margin-top: 5px;
+    margin-right: auto;
+}
+ buttonLayout().addClassName("UserButtonLayout");*/
+
+.UsersFormLayout{
+    width: fit-content !important;
+    height: 100%;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+
+vaadin-text-field::part(label), vaadin-combo-box::part(label), vaadin-email-field::part(label),
+vaadin-integer-field::part(label), vaadin-password-field::part(label), vaadin-checkbox-group::part(label){
+     font-family: 'Josefin Sans', sans-serif;
+     font-size: 14px;
+     font-weight: 200;
+     color: #1434A4 !important;
+}
+
+vaadin-text-field::part(input-field), vaadin-combo-box::part(input-field), vaadin-email-field::part(input-field),
+vaadin-integer-field::part(input-field), vaadin-password-field::part(input-field){
+   font-family: 'Josefin Sans', sans-serif;
+   font-size: 14px;
+   font-weight: 200;
+   border: solid 0.5px #1434A4 !important;
+   background-color: white;
+   height: 35px !important;
+}
+
+vaadin-checkbox::part(checkbox){
+   font-family: 'Josefin Sans', sans-serif;
+   font-size: 14px;
+   font-weight: 200;
+   border: solid 0.5px #1434A4 !important;
+   background-color: white;
+   text-align: center;
+}
+
+
+
+
