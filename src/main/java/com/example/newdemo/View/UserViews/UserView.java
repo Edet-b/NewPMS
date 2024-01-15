@@ -79,9 +79,9 @@ public class UserView extends VerticalLayout implements RouterLayout {
 
         List<Users> usersList = userService.getAllUsers();
         userGrid.setItems(usersList);
-        userGrid.addClassName("UserGrid");
+        userGrid.addClassName("grid");
 
-        userGrid.asSingleSelect().addValueChangeListener(event -> editUser(event.getValue()));
+        userGrid.addItemClickListener(event -> editUser(event.getItem()));
         updateList();
     }
 
@@ -93,13 +93,13 @@ public class UserView extends VerticalLayout implements RouterLayout {
         filterText.setPrefixComponent(searchIcon);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
-        filterText.addClassName("SearchUsers");
+        filterText.addClassName("search-users");
         filterText.getStyle().set("margin-top", "32px");
 
         Icon addIcon = new Icon(VaadinIcon.PLUS);
         addUser = new Button("New User");
         addUser.setPrefixComponent(addIcon);
-        addUser.addClassName("AddUsers");
+        addUser.addClassName("add-users");
 
         addUser.addClickListener(clickEvent ->
             UI.getCurrent().navigate(UserFormView.class));
@@ -112,7 +112,7 @@ public class UserView extends VerticalLayout implements RouterLayout {
                 updateList();
         }});
 
-        newUserRoles.addClassName("NewUserRoles");
+        newUserRoles.addClassName("new-user-roles");
 
 
         var toolbar = new HorizontalLayout(addUser, filterText, newUserRoles);

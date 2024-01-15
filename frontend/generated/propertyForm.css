@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+
+
+.property-main-layout{
+    width: 100% !important;
+}
+
+.property-form-layout{
+    width: fit-content;
+    height: 100% !important;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.back-to-property{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: #1434A4;
+    margin-bottom: -10px;
+}
+
+.sub-titles-properties{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+vaadin-text-field::part(label), vaadin-combo-box::part(label), vaadin-email-field::part(label),
+vaadin-integer-field::part(label), vaadin-password-field::part(label), vaadin-checkbox-group::part(label),
+ vaadin-number-field::part(label), vaadin-text-area::part(label), vaadin-checkbox-group > label{
+     font-family: 'Josefin Sans', sans-serif;
+     font-size: 14px;
+     font-weight: 200;
+     color: #1434A4 !important;
+}
+
+vaadin-text-field::part(input-field), vaadin-combo-box::part(input-field), vaadin-email-field::part(input-field),
+vaadin-integer-field::part(input-field), vaadin-password-field::part(input-field), vaadin-number-field::part(input-field){
+   font-family: 'Josefin Sans', sans-serif;
+   font-size: 14px;
+   font-weight: 200;
+   border: solid 0.5px #1434A4 !important;
+   background-color: white;
+   height: 35px !important;
+}
+
+vaadin-checkbox::part(checkbox)::after{
+   border: solid 0.5px #1434A4 !important;
+   background-color: white;
+   color: #1434A4 !important;
+}
+
+vaadin-checkbox > label{
+   font-family: 'Josefin Sans', sans-serif;
+   font-size: 14px;
+   font-weight: 300;
+   color: #1434A4;
+}
+
+vaadin-text-area::part(input-field){
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 200;
+    border: solid 0.5px #1434A4 !important;
+    background-color: white;
+    height: 100px !important;
+}
+
+.save{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    background-color: #1434A4 !important;
+    color: white !important;
+    margin-top:10px;
+}
+
+.cancel{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    color: #FF1400;
+    background-color: #EFEFEF;
+    margin-left:80%;
+    margin-top:10px;
+}

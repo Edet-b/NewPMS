@@ -1,6 +1,7 @@
 package com.example.newdemo.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Entity
@@ -10,8 +11,9 @@ public class PropertyImage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "property_id")
+    @JoinColumn(name = "propertyId")
     private Property property;
 
     @Column(columnDefinition = "LONGBLOB")

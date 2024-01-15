@@ -64,6 +64,7 @@
   "@vaadin/vaadin-usage-statistics": "2.1.2",
   "@vaadin/vertical-layout": "24.2.2",
   "@vaadin/virtual-list": "24.2.2",
+  "chart.js": "^4.4.1",
   "construct-style-sheets-polyfill": "3.1.0",
   "date-fns": "2.29.3",
   "lit": "2.8.0",
@@ -211,7 +212,11 @@
   "@vaadin/vaadin-themable-mixin",
   "@vaadin/vertical-layout/theme/lumo/vaadin-vertical-layout.js",
   "@vaadin/virtual-list/theme/lumo/vaadin-virtual-list.js",
-  "Frontend//generated/mainview.css",
+  "Frontend//generated/dashboard.css",
+  "Frontend//generated/locationView.css",
+  "Frontend//generated/mainView.css",
+  "Frontend//generated/propertyForm.css",
+  "Frontend//generated/propertyView.css",
   "Frontend//generated/userForm.css",
   "Frontend//generated/users.css",
   "Frontend/generated/jar-resources/buttonFunctions.js",
@@ -255,12 +260,12 @@
  },
  "themeJsonContents": {},
  "entryScripts": [
-  "VAADIN/build/indexhtml-ec12c3ae.js"
+  "VAADIN/build/indexhtml-33a0cc25.js"
  ],
  "webComponents": [],
  "cvdlModules": {},
- "packageJsonHash": "f6605195d46ebdc5f9744b1ea31b02f05bbdc61152fdc81dd67939bcb24c04c1",
+ "packageJsonHash": "60175771cb7afc42dee8606ee50656b88a093ec54ef8889bdedfcb6ec70bc497",
  "indexHtmlGenerated": [
-  "  <script type=\"module\" crossorigin src=\"./VAADIN/build/indexhtml-ec12c3ae.js\"></script>"
+  "  <script type=\"module\" crossorigin src=\"./VAADIN/build/indexhtml-33a0cc25.js\"></script>"
  ]
 }

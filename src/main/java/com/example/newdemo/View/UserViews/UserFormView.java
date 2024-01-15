@@ -63,8 +63,8 @@ public class UserFormView extends VerticalLayout {
         backToUser.addClickListener(e -> close());
         backToUser.getStyle().set("border", "0px").set("background-color", "white ");
 
-        backToUser.addClassName("BackToUsers");
-        userForm.addClassName("UsersForm");
+        backToUser.addClassName("back-to-users");
+        userForm.addClassName("users-form");
 
         add(backToUser, userForm);
         userForm.userRoles.addValueChangeListener(event -> {
@@ -76,7 +76,6 @@ public class UserFormView extends VerticalLayout {
             } else{
                 userForm.locationAccess.setVisible(true);
                 userForm.state.setVisible(true);
-//                userForm.city.setVisible(true);
             }
         });
 
@@ -93,7 +92,6 @@ public class UserFormView extends VerticalLayout {
 
     private void save(UserForm.SaveEvent event){
 
-
         String email = event.getUser().getEmail();
         String username = event.getUser().getUsername();
 
@@ -109,12 +107,9 @@ public class UserFormView extends VerticalLayout {
             Notification notification = new Notification("Username already exists", 3000, Notification.Position.MIDDLE);
             notification.open();
         }
-
             event.getUser().setUpdatedAt(LocalDateTime.now());
             userService.saveUsers(event.getUser());
             updateList();
-
-
     }
 
     public void close(){

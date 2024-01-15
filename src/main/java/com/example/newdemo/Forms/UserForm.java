@@ -79,6 +79,11 @@ public class UserForm extends FormLayout {
         H3 userData = new H3("UserData");
         locationAccess = new H3("Location Access");
 
+        profileInfo.addClassName("sub-titles");
+        address.addClassName("sub-titles");
+        userData.addClassName("sub-titles");
+        locationAccess.addClassName("sub-titles");
+
         profileInfo.getStyle().set("margin-top", "0px");
 
         password.setMinLength(8);
@@ -123,25 +128,22 @@ public class UserForm extends FormLayout {
 
         userFormLayout.getElement().getStyle().set("width", "fit-content");
 
-        userFormLayout.addClassName("UserFormLayout");
+        userFormLayout.addClassName("user-form-layout");
 
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
         mainLayout.add(userFormLayout);
-        mainLayout.addClassName("MainLayoutUsers");
+        mainLayout.addClassName("users-main-layout");
         add(mainLayout);
-
     }
 
-
-
     public HorizontalLayout buttonLayout() {
-        save.addClassName("UsersSave");
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        discardChanges.addClassName("UsersDiscard");
-
         save.addClickShortcut(Key.ENTER);
         discardChanges.addClickShortcut(Key.ESCAPE);
+
+        save.addClassName("users-save");
+        delete.addClassName("users-delete");
+        discardChanges.addClassName("users-cancel");
 
         save.addClickListener(clickEvent -> validateAndSave());
         delete.addClickListener(clickEvent -> fireEvent(new DeleteEvent(this, userBinder.getBean())));

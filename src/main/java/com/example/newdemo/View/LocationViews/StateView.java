@@ -1,38 +1,45 @@
 package com.example.newdemo.View.LocationViews;
 
 import com.example.newdemo.Forms.StateForm;
+import com.example.newdemo.Repository.StateRepository;
 import com.example.newdemo.Service.StateService;
 import com.example.newdemo.Entity.State;
 import com.example.newdemo.View.MainView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Route(value = "", layout = MainView.class)
+@CssImport("/generated/locationView.css")
+@Route(value = "stateView", layout = MainView.class)
 public class StateView extends VerticalLayout {
-
     Grid<State> stateGrid = new Grid<>(State.class);
-
     TextField filterText = new TextField();
-
-    StateForm stateForm = new StateForm();
-    Dialog stateFormDialog = new Dialog();
+    StateForm editStateForm  = new StateForm();
     StateService service;
+    State originalState;
     StateForm newStateForm = new StateForm();
-    Dialog newDialog = new Dialog();
+    Dialog editDialog = new Dialog();
     Dialog newStateDialog = new Dialog();
+    @Autowired
+    StateRepository stateRepository;
 
     @Autowired
     public StateView(StateService service) {
@@ -41,8 +48,6 @@ public class StateView extends VerticalLayout {
         setSizeFull();
         configureGrid();
 
-        stateFormDialog.add(stateForm);
-
         newStateForm.setState(new State());
         newStateForm.delete.setVisible(false);
 
@@ -50,70 +55,144 @@ public class StateView extends VerticalLayout {
         newStateForm.addCloseListener(e -> closeNew());
 
         newStateDialog.setHeaderTitle("New State");
+        newStateDialog.addClassName("titles");
+
         newStateDialog.getFooter().add(newStateForm.buttonLayout());
         newStateDialog.add(newStateForm);
 
         Tab state = new Tab(new RouterLink("State", StateView.class));
         Tab city = new Tab(new RouterLink("City", CityView.class));
 
-        HorizontalLayout display = new HorizontalLayout(state, city);
+        state.addClassName("location-items");
+        city.addClassName("location-items");
 
-        Scroller item = new Scroller(display);
+        Tabs locationTabs = new Tabs(state, city);
+        locationTabs.addClassName("location-tabs");
 
-        configureForm();
+        locationTabs.setSelectedTab(state);
+        HorizontalLayout display = new HorizontalLayout(locationTabs);
+        display.addClassName("location-navbar");
         getToolbar();
 
-        add(item, getToolbar(), stateGrid);
+        add(display, getToolbar(), stateGrid);
         updateList();
     }
-
 
     private void updateList() {
-        stateGrid.setItems(service.getAllStatesByFilter(filterText.getValue()));
+       if(filterText.isEmpty()) {
+           List<State> states = service.getAllStatesByFilter(filterText.getEmptyValue());
+
+           List<State> sortedStates = states.stream()
+                   .sorted(Comparator.comparing(State::getName))
+                   .collect(Collectors.toList());
+
+           stateGrid.setItems(sortedStates);
+           stateGrid.setColumns("name", "stateId");
+       } else{
+           List<State> states = service.getAllStatesByFilter(filterText.getValue());
+
+           List<State> sortedStates = states.stream()
+                   .sorted(Comparator.comparing(State::getName))
+                   .toList();
+
+           stateGrid.setItems(sortedStates);
+       }
     }
 
-    private void save(StateForm.SaveEvent event){
-        service.saveState(event.getState());
-        updateList();
-        close();
+    private void saveNew(StateForm.SaveEvent event) {
+        String name = event.getState().getName();
+        String id = event.getState().getStateId();
+
+        Optional<State> stateName = stateRepository.findByName(name);
+        Optional<State> stateId = stateRepository.findByStateId(id);
+
+        if (stateName.isPresent() && stateId.isPresent()) {
+            Notification.show("State and State ID already exist", 3000, Notification.Position.BOTTOM_START);
+        } else if (stateName.isPresent()) {
+            Notification.show("State already exists", 3000, Notification.Position.BOTTOM_START);
+        } else if (stateId.isPresent()) {
+            Notification.show("State ID already exists", 3000, Notification.Position.BOTTOM_START);
+        } else {
+            service.saveState(event.getState());
+            newStateForm.name.clear();
+            newStateForm.stateId.clear();
+            newStateDialog.close();
+            updateList();
+        }
+    }
+    private void closeNew(){
+        newStateForm.name.clear();
+        newStateForm.stateId.clear();
+        newStateDialog.close();
     }
 
-    private void delete(StateForm.DeleteEvent event){
-        service.deleteState(event.getState());
-        updateList();
-        close();
-    }
-    private void close(){
-       stateFormDialog.close();
-    }
 
     private void configureGrid() {
-        stateGrid.setItems(service.getAllStatesByFilter(filterText.getEmptyValue()));
+      List<State> states = service.getAllStatesByFilter(filterText.getEmptyValue());
+        List<State> sortedStates = states.stream()
+                .sorted(Comparator.comparing(State::getName))
+                .collect(Collectors.toList());
+
+        stateGrid.setItems(sortedStates);
         stateGrid.setColumns("name", "stateId");
         stateGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-        stateGrid.asSingleSelect().addValueChangeListener(event -> edit(event.getValue()));
+        stateGrid.addItemClickListener(event -> edit(event.getItem()));
+        stateGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+
+        stateGrid.addItemClickListener(event -> edit(event.getItem()));
+        stateGrid.addClassName("grid");
     }
 
-    private void configureForm() {
-        stateForm = new StateForm();
 
-        stateForm.addSaveListener(this::save);
-        stateForm.addDeleteListener(this::delete);
-        stateForm.addCloseListener(e -> close());
+    private void edit(State state){
+        if(state != null){
+            editStateForm.setState(state);
 
-        stateFormDialog.setHeaderTitle("State");
-        stateFormDialog.getFooter().add(stateForm.buttonLayout());
+            if (originalState == null) {
+                originalState = new State();
+            }
+
+            originalState.setName(state.getName());
+            originalState.setStateId(state.getStateId());
+
+            editStateForm.addSaveListener(this::saveEdit);
+            editStateForm.addDeleteListener(this::deleteEdit);
+            editStateForm.addCloseListener(e -> closeEdit());
+
+            editDialog.setHeaderTitle("State");
+            editDialog.addClassName("titles");
+            editDialog.getFooter().add(editStateForm.buttonLayout());
+            editDialog.add(editStateForm);
+            editDialog.open();
+        }  else{
+            closeEdit();
+        }
     }
 
-    private void saveEdit(StateForm.SaveEvent event){
-        service.saveState(event.getState());
-        updateList();
-        closeEdit();
-    }
+    private void saveEdit(StateForm.SaveEvent e) {
+        String name = e.getState().getName();
+        String id = e.getState().getStateId();
 
+        boolean nameChanged = !name.equals(originalState.getName());
+        boolean stateIdChanged = !id.equals(originalState.getStateId());
+
+        Optional<State> stateName = stateRepository.findByName(name);
+        Optional<State> stateId = stateRepository.findByStateId(id);
+
+        if(nameChanged && stateName.isPresent()) {
+            Notification.show("State already exist", 3000, Notification.Position.BOTTOM_START);
+        }
+        else if(stateIdChanged && stateId.isPresent()) {
+            Notification.show("State Id already exist", 3000, Notification.Position.BOTTOM_START);
+        } else{
+            service.saveState(e.getState());
+            updateList();
+            closeEdit();
+        }
+    }
 
     private void closeEdit(){
-        newDialog.close();
+        editDialog .close();
     }
 
     private void deleteEdit(StateForm.DeleteEvent event){
@@ -122,49 +201,17 @@ public class StateView extends VerticalLayout {
         closeEdit();
     }
 
-    private void edit(State state){
-        if(state != null){
-            stateForm.setState(state);
-
-            stateForm.addSaveListener(this::saveEdit);
-            stateForm.addDeleteListener(this::deleteEdit);
-            stateForm.addCloseListener(e -> closeEdit());
-
-
-            newDialog.setHeaderTitle("State");
-            newDialog.getFooter().add(stateForm.buttonLayout());
-            newDialog.add(stateForm);
-            newDialog.open();
-        }  else{
-            closeEdit();
-        }
-    }
-
-    private void saveNew(StateForm.SaveEvent event){
-        service.saveState(event.getState());
-        updateList();
-        closeNew();
-
-        newStateForm.setState(new State());
-    }
-
-    private void closeNew(){
-        newStateDialog.close();
-    }
-
     private HorizontalLayout getToolbar() {
         Icon searchIcon = new Icon(VaadinIcon.SEARCH);
-        filterText.setPlaceholder("Search");
+        filterText.setPlaceholder("Search City");
         filterText.setClearButtonVisible(true);
         filterText.setSuffixComponent(searchIcon);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
-       Button addState = new Button("Add State", event -> newStateDialog.open());
-
-
-        var toolbar = new HorizontalLayout(filterText, addState);
-        toolbar.addClassName("stateToolBar");
+        Button addState = new Button("Add State", clickEvent -> newStateDialog.open());
+        addState.addClassName("add-state-button");
+        HorizontalLayout toolbar = new HorizontalLayout(filterText, addState);
         return toolbar;
     }
 

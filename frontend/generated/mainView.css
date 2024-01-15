@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+
+.sideNavbar {
+   background-color:#1434A4;
+   padding-left: 15px;
+   height: 100%;
+   color:white;
+   margin-right: 0px;
+}
+
+.tabs > vaadin-icon{
+  text-align: center;
+  color: white !important;
+}
+
+.tabs[slot="prefix"]{
+  text-align: center;
+  color: white !important;
+}
+
+.tabs {
+     font-family:'Josefin Sans', sans-serif;
+     font-size: 16px;
+     font-weight:300;
+     color: white !important;
+     margin-right: 20px;
+}
+
+.tabs[current]{
+    border: solid 0.5px white;
+    border-radius: 5px;
+    color:#1434A4 !important;
+    background-color: white !important;
+    padding-right: -10px;
+}
+
+.tabs[current] > vaadin-icon{
+     color:#1434A4 !important;
+}
+
+

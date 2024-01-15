@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+
+.add-property, .reset-filters{
+   font-family: 'Josefin Sans', sans-serif;
+   margin-top: 35px;
+   background-color: #34A853;
+   color: white;
+   font-weight: 500;
+   font-size: 14px;
+}
+
+.save{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    background-color: #1434A4 !important;
+    color: white !important;
+    margin-top:10px;
+}
+
+.cancel{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    color: #FF1400;
+    background-color: #EFEFEF;
+    margin-left: auto;
+    margin-top:10px;
+}
+
+.delete{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    color: white;
+    background-color: #FF1400;
+    margin-top:10px;
+}
+.grid::part(header-cell){
+    font-family: 'Josefin Sans',  sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #2F2F2F;
+}
+
+.grid::part(body-cell){
+    font-family: 'Josefin Sans',  sans-serif;
+    font-weight: 200;
+    font-size: 14px;
+    color: #6B6B6B;
+    line-height: normal;
+    font-style: normal;
+}
+
+.grid::part(row):hover > ::part(body-cell){
+    font-family: 'Josefin Sans',  sans-serif;
+    font-weight: 200;
+    font-size: 14px;
+    background-color:#A198E2;
+    color: #6B6B6B;
+}
+

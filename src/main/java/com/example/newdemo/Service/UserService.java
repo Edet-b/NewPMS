@@ -7,6 +7,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +63,22 @@ public class UserService {
         }
     }
 
+    public Long findUserByUserRoles(){
+        List<Users> clientRoles = userRepository.findUserByUserRoles(Users.userRoles.Client);
+        return  clientRoles.stream().count();
+    }
+
+    public List<Users> findUserByUserRoleClient(){
+        List<Users> clients = new ArrayList<>(4);
+        clients = userRepository.findUserByUserRoles(Users.userRoles.Client);
+
+        return clients;
+    }
+
+    public Long findOtherUserRolesExceptClients(){
+        List<Users> otherUserRolesExceptClients = userRepository.findAllUserRolesExceptClients();
+        return  otherUserRolesExceptClients.stream().count();
+    }
 
 
 }

@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+
+.location-navbar{
+    background-color: #8C8C8C;
+    width: 120%;
+    margin-top:-20px;
+    margin-left:-20px;
+}
+
+.location-items{
+    color: white;
+    font-family: 'Josefin Sans', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    margin-top: 2.5px;
+}
+
+
+.location-items[selected] {
+  color: orange;
+}
+
+.location-tabs .location-items::after{
+   background-color: orange !important;
+   opacity: 100;
+   box-shadow: none !important;
+
+}
+
+.add-state-button{
+    font-family: 'Josefin Sans', sans-serif;
+    margin-top: 3px;
+    background-color: #34A853;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+
+.add-city-button{
+    font-family: 'Josefin Sans', sans-serif;
+    margin-top: 3px;
+    background-color: #34A853;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.grid::part(header-cell){
+    font-family: 'Josefin Sans',  sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #2F2F2F;
+}
+
+.grid::part(body-cell){
+    font-family: 'Josefin Sans',  sans-serif;
+    font-weight: 200;
+    font-size: 14px;
+    color: #6B6B6B;
+    line-height: normal;
+    font-style: normal;
+}
+
+.grid::part(row):hover > ::part(body-cell){
+    font-family: 'Josefin Sans',  sans-serif;
+    font-weight: 200;
+    font-size: 14px;
+    background-color:#A198E2;
+    color: #6B6B6B;
+}
+
+.save-button{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    background-color: #1434A4 !important;
+    color: white !important;
+    margin-top: 5px;
+    margin-left: auto;
+}
+
+.cancel-button{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 14px;
+    color: #FF1400;
+    background-color: #EFEFEF;
+    margin-top: 5px;
+    margin-left: -430px;
+}
+
+.delete-button{
+     font-family: 'Josefin Sans', sans-serif;
+     font-size: 14px;
+     color: white !important;
+     background-color: #FF1400;
+     margin-left:auto
+}
+
+.titles{
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 18px;
+    color: black;
+    font-weight: 300 !important;
+}

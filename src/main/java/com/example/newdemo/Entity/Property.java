@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class Property {
 
     public enum PropertyFeatures {
-        SwimmingPool("Swimming Pool"), Garden("Garden"), Garage("Garage");
+        SwimmingPool("Swimming" + " pool"), Garden("Garden"), Garage("Garage");
 
         private String name;
 
@@ -34,7 +35,7 @@ public class Property {
     }
 
     public enum PropertyStatus {
-        Available("Available"), UnderOffer("Under Offer"), Sold("Sold");
+        Available("Available"), UnderOffer("Under" + " offer"), Sold("Sold");
         private String name;
 
         PropertyStatus(String name){
@@ -43,7 +44,7 @@ public class Property {
     }
 
     public enum PropertyType {
-        Land("Land"), SemiDetachedDuplex("Semi Detached Duplex"), DetachedDuplex("Detached Duplex"), Bungalow("Bungalow");
+        Land("Land"), SemiDetachedDuplex("Semi" + " detached" +" duplex"), DetachedDuplex("Detached" + " duplex"), Bungalow("Bungalow");
 
         private String name;
         PropertyType(String name){
@@ -95,9 +96,10 @@ public class Property {
 
     private String description;
 
-    @Column(nullable = false)
-    @OneToMany(mappedBy = "property", fetch = FetchType.EAGER)
+    @NotNull
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PropertyImage> propertyImages = new ArrayList<>();
+
 
     public Property() {
     }
@@ -238,5 +240,12 @@ public class Property {
         this.propertyImages = propertyImages;
     }
 
+    public String getPriceFormattedToString(){
+        String nairaSymbol = "\u20A6";
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedPrice = decimalFormat.format(this.price);
+
+        return nairaSymbol + formattedPrice;
+    }
 
 }

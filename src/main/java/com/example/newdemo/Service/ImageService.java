@@ -15,9 +15,11 @@ public class ImageService {
         this.imageRepository = imageRepository;
     }
 
-    public void saveImageToDatabase(byte[] imageData) {
+
+    public void saveImageToDatabase(Property property, byte[] imageData) {
         PropertyImage imageEntity = new PropertyImage();
         imageEntity.setPropertyImages(imageData);
+        imageEntity.setProperty(property);
         imageRepository.save(imageEntity);
     }
 }

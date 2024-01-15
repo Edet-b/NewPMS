@@ -6,6 +6,7 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -14,19 +15,18 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
 
+@CssImport("/generated/locationView.css")
 public class StateForm extends FormLayout {
 
-    TextField name = new TextField("Name");
-    TextField stateId = new TextField("State Id");
+    public TextField name = new TextField("Name");
+    public TextField stateId = new TextField("State Id");
 
     Button save = new Button("Save");
     public Button delete = new Button("Delete");
-    Button cancel = new Button("Cancel");
+    Button cancel = new Button("Discharge Changes");
 
     Binder<State> stateBinder = new BeanValidationBinder<>(State.class);
     public StateForm(){
-
-        addClassName("StateForm");
         stateBinder.bindInstanceFields(this);
         FormLayout stateForm = new FormLayout(
                 name, stateId);
@@ -36,14 +36,12 @@ public class StateForm extends FormLayout {
     }
 
     public HorizontalLayout buttonLayout(){
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
         save.addClickShortcut(Key.ENTER);
         cancel.addClickShortcut(Key.ESCAPE);
 
-        cancel.getStyle().set("margin-right", "auto");
+        save.addClassName("save-button");
+        delete.addClassName("delete-button");
+        cancel.addClassName("cancel-button");
 
         save.addClickListener(clickEvent -> validateAndSave());
         delete.addClickListener(clickEvent -> fireEvent(new DeleteEvent(this, stateBinder.getBean())));
@@ -51,7 +49,7 @@ public class StateForm extends FormLayout {
 
         stateBinder.addStatusChangeListener(event -> save.setEnabled(stateBinder.isValid()));
 
-        return new HorizontalLayout( cancel, save, delete);
+        return new HorizontalLayout(cancel, delete, save);
     }
 
     public void setState(State state){

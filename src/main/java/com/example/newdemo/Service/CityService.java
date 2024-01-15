@@ -48,4 +48,8 @@ public class CityService {
     public Set<City> getAllCitiesByState(State state){
         return cityRepository.findByState(state);
     }
+
+    public List<City> getAllCitiesByStateByList(State state){
+        return cityRepository.findByStates(state);
+    }
 }

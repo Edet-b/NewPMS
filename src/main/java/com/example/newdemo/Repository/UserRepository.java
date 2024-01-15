@@ -24,5 +24,14 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Optional<Users> findByEmail(String email);
 
+    @Query("SELECT u.password FROM Users u WHERE u.username = :username")
+    Optional<String> getHashedPasswordByUsername(@Param("username") String username);
+
     Optional<Users> findByUsername(String username);
+
+    @Query("SELECT p FROM Users p WHERE p.userRoles = :userRoles AND p.userRoles = 'Client'")
+    List<Users> findUserByUserRoles(@Param("userRoles") Users.userRoles roles);
+
+    @Query("SELECT p FROM Users p WHERE p.userRoles <> 'Client'")
+    List<Users> findAllUserRolesExceptClients();
 }

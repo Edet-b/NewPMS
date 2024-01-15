@@ -3,8 +3,6 @@ package com.example.newdemo.Forms;
 import com.example.newdemo.Entity.City;
 import com.example.newdemo.Entity.Property;
 import com.example.newdemo.Entity.State;
-import com.example.newdemo.Entity.Users;
-import com.example.newdemo.Service.ImageService;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
@@ -12,56 +10,43 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.upload.MultiFileReceiver;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
 
+@CssImport("/generated/propertyForm.css")
 public class PropertyForm extends FormLayout {
 
     public ComboBox<State> state = new ComboBox<>("State");
     public ComboBox<City> city = new ComboBox<>("City");
     public TextField street = new TextField("Street");
-
     public ComboBox<Property.PropertyType> type = new ComboBox<>("Property Type");
     public IntegerField lotSize = new IntegerField("Lot Size");
     public IntegerField noOfBedrooms = new IntegerField("No of Bedrooms");
-
     public IntegerField noOfBathrooms = new IntegerField("No of Bathrooms");
-
     public NumberField price = new NumberField("Price");
-
     public ComboBox<String> owners = new ComboBox<>("Clients");
     public ComboBox<Property.PropertyStatus> status = new ComboBox<>("Status");
-
     public CheckboxGroup<Property.PropertyServices> services = new CheckboxGroup<>("Services");
-
     public CheckboxGroup<Property.PropertyFeatures> features = new CheckboxGroup<>("Additional Features");
-
     public TextArea description = new TextArea("Description");
-
-    public H3 newProperty;
-
     public MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
     public Upload propertyImages = new Upload(buffer);
 
@@ -70,9 +55,7 @@ public class PropertyForm extends FormLayout {
 
     Button save = new Button("Save");
     public Button delete = new Button("Delete");
-    Button cancel = new Button("Cancel");
-    @Autowired
-    ImageService service;
+    Button cancel = new Button("Discharge Changes");
 
 
     public PropertyForm(List<State> states, List<City> cities){
@@ -103,10 +86,13 @@ public class PropertyForm extends FormLayout {
         FormLayout sCS = new FormLayout(state, city, street);
         FormLayout tLP = new FormLayout(type, lotSize, price);
         FormLayout nNS = new FormLayout(noOfBedrooms, noOfBathrooms, status);
+        FormLayout clients = new FormLayout(owners);
 
         sCS.setResponsiveSteps(new ResponsiveStep("0", 3));
         tLP.setResponsiveSteps(new ResponsiveStep("0", 3));
         nNS.setResponsiveSteps(new ResponsiveStep("0", 3));
+        clients.setResponsiveSteps(new ResponsiveStep("0", 3));
+
 
         sCS.setSizeFull();
         tLP.setSizeFull();
@@ -114,37 +100,42 @@ public class PropertyForm extends FormLayout {
 
         H6 location = new H6("LOCATION");
         H6 propertyDetails = new H6("PROPERTY DETAILS");
-        location.getStyle().set("margin-top", "15px");
+        location.getStyle().set("margin-top", "8px");
 
-        newProperty = new H3("New Property");
 
-        propertyDetails.getStyle().set("margin-top", "10px");
+        location.addClassName("sub-titles-properties");
+        propertyDetails.addClassName("sub-titles-properties");
+
+        propertyDetails.getStyle().set("margin-top", "20px");
         FormLayout propertyFormLayout = new FormLayout(
-                newProperty,
                 location,
                 sCS,
                 propertyDetails,
                 tLP,
                 nNS,
-                owners, services, features,
+                clients, services, features,
                 description, propertyImages,
                 buttonLayout()
                 );
 
         propertyFormLayout.setResponsiveSteps(new ResponsiveStep("0", 1));
         propertyFormLayout.setSizeFull();
-        propertyFormLayout.getStyle().set("width", "100%");
 
+        propertyFormLayout.getElement().getStyle().set("width", "fit-content");
 
-        VerticalLayout mainLayout = new VerticalLayout(propertyFormLayout);
+        propertyFormLayout.addClassName("property-form-layout");
+
+        VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
+        mainLayout.add(propertyFormLayout);
+        mainLayout.addClassName("property-main-layout");
         add(mainLayout);
     }
 
     public HorizontalLayout buttonLayout() {
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        save.addClassName("save");
+        delete.addClassName("delete");
+        cancel.addClassName("cancel");
 
         save.addClickShortcut(Key.ENTER);
         cancel.addClickShortcut(Key.ESCAPE);

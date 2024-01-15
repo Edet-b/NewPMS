@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -18,14 +19,15 @@ import lombok.Getter;
 
 import java.util.List;
 
+@CssImport("/generated/locationView.css")
 public class CityForm extends FormLayout {
 
-    ComboBox<State> state = new ComboBox<>("State");
-    TextField name = new TextField("Name");
-    TextField cityId = new TextField("City Id");
+    public ComboBox<State> state = new ComboBox<>("State");
+    public TextField name = new TextField("Name");
+    public TextField cityId = new TextField("City Id");
 
     Button save = new Button("Save");
-    Button cancel = new Button("Cancel");
+    Button cancel = new Button("Discharge Changes");
     public Button delete = new Button("Delete");
 
     Binder<City> cityBinder = new BeanValidationBinder<>(City.class);
@@ -42,12 +44,12 @@ public class CityForm extends FormLayout {
     }
 
     public HorizontalLayout buttonLayout() {
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-
         save.addClickShortcut(Key.ENTER);
         cancel.addClickShortcut(Key.ESCAPE);
+
+        save.addClassName("save-button");
+        delete.addClassName("delete-button");
+        cancel.addClassName("cancel-button");
 
         save.addClickListener(clickEvent -> validateAndSave());
         delete.addClickListener(clickEvent -> fireEvent(new DeleteEvent(this, cityBinder.getBean())));

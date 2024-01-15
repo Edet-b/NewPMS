@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -19,4 +20,11 @@ public interface CityRepository extends JpaRepository<City, Long> {
     List<City> search(@Param("searchTerm") String filter);
 
     Set<City> findByState(State state);
+
+    @Query("SELECT c FROM City c WHERE c.state = :state")
+    List<City> findByStates(@Param("state") State state);
+
+    Optional<City> findByName(String name);
+
+    Optional<City> findByCityId(String cityId);
 }

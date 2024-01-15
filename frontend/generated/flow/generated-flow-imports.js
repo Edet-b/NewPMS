@@ -1,15 +1,27 @@
 import { injectGlobalCss } from 'Frontend/generated/jar-resources/theme-util.js';
 
 import { css, unsafeCSS, registerStyles } from '@vaadin/vaadin-themable-mixin';
-import $cssFromFile_0 from 'Frontend//generated/userForm.css?inline';
+import $cssFromFile_0 from 'Frontend//generated/locationView.css?inline';
 
 injectGlobalCss($cssFromFile_0.toString(), 'CSSImport end', document);
-import $cssFromFile_1 from 'Frontend//generated/mainview.css?inline';
+import $cssFromFile_1 from 'Frontend//generated/propertyForm.css?inline';
 
 injectGlobalCss($cssFromFile_1.toString(), 'CSSImport end', document);
-import $cssFromFile_2 from 'Frontend//generated/users.css?inline';
+import $cssFromFile_2 from 'Frontend//generated/userForm.css?inline';
 
 injectGlobalCss($cssFromFile_2.toString(), 'CSSImport end', document);
+import $cssFromFile_3 from 'Frontend//generated/dashboard.css?inline';
+
+injectGlobalCss($cssFromFile_3.toString(), 'CSSImport end', document);
+import $cssFromFile_4 from 'Frontend//generated/mainView.css?inline';
+
+injectGlobalCss($cssFromFile_4.toString(), 'CSSImport end', document);
+import $cssFromFile_5 from 'Frontend//generated/propertyView.css?inline';
+
+injectGlobalCss($cssFromFile_5.toString(), 'CSSImport end', document);
+import $cssFromFile_6 from 'Frontend//generated/users.css?inline';
+
+injectGlobalCss($cssFromFile_6.toString(), 'CSSImport end', document);
 import '@vaadin/polymer-legacy-adapter/style-modules.js';
 import '@vaadin/form-layout/theme/lumo/vaadin-form-layout.js';
 import '@vaadin/vertical-layout/theme/lumo/vaadin-vertical-layout.js';

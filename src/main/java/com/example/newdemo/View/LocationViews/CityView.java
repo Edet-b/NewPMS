@@ -1,41 +1,48 @@
 package com.example.newdemo.View.LocationViews;
 
+import com.example.newdemo.Entity.State;
 import com.example.newdemo.Forms.CityForm;
+import com.example.newdemo.Repository.CityRepository;
 import com.example.newdemo.Service.CityService;
 import com.example.newdemo.Service.StateService;
 import com.example.newdemo.Entity.City;
 import com.example.newdemo.View.MainView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+@CssImport("/generated/locationView.css")
 @Route(value = "cityView", layout = MainView.class)
 public class CityView extends VerticalLayout {
 
     Grid<City> cityGrid = new Grid<>(City.class, false);
     TextField filterText = new TextField();
-
     CityForm cityForm;
-    Dialog newCityDialog = new Dialog();
     CityService cityService;
     StateService stateService;
-
     CityForm newForm;
     Dialog newFormDialog = new Dialog();
     Dialog editDialog = new Dialog();
+    City originalCity;
+    @Autowired
+    CityRepository cityRepository;
 
     @Autowired
     public CityView(CityService cityService, StateService stateService){
@@ -43,7 +50,6 @@ public class CityView extends VerticalLayout {
         this.stateService = stateService;
 
         cityForm = new CityForm(stateService.getAllStates());
-        newCityDialog.add(cityForm);
 
         newForm = new CityForm(stateService.getAllStates());
         newForm.setCity(new City());
@@ -51,54 +57,108 @@ public class CityView extends VerticalLayout {
         newForm.addSaveListener(this::saveNew);
         newForm.addCloseListener(e -> closeNew());
 
-        newFormDialog.setHeaderTitle("New Form");
+        newFormDialog.setHeaderTitle("New City");
+        newFormDialog.addClassName("titles");
+
         newFormDialog.getFooter().add(newForm.buttonLayout());
         newFormDialog.add(newForm);
 
         Tab state = new Tab(new RouterLink("State", StateView.class));
         Tab city = new Tab(new RouterLink("City", CityView.class));
 
-        HorizontalLayout display = new HorizontalLayout(state, city);
+        state.addClassName("location-items");
+        city.addClassName("location-items");
 
-        Scroller item = new Scroller(display);
+        Tabs locationTabs = new Tabs(state, city);
+        locationTabs.addClassName("location-tabs");
+
+        locationTabs.setSelectedTab(city);
+        HorizontalLayout display = new HorizontalLayout(locationTabs);
+        display.addClassName("location-navbar");
 
         setSizeFull();
         configureGrid();
-        configureForm();
         getToolbar();
-        add(item, getToolbar(), cityGrid);
+        add(display, getToolbar(), cityGrid);
         updateList();
     }
 
-    private void saveNew(CityForm.SaveEvent event) {
-        cityService.saveCity(event.getCity());
-        updateList();
-        closeNew();
-    }
 
     private void closeNew() {
+        newForm.name.clear();
+        newForm.cityId.clear();
+        newForm.state.clear();
         newFormDialog.close();
     }
 
-    private void save(CityForm.SaveEvent event){
-        cityService.saveCity(event.getCity());
-        updateList();
-        close();
+    private void saveNew(CityForm.SaveEvent event){
+
+        String name = event.getCity().getName();
+        String id = event.getCity().getCityId();
+
+        Optional<City> cityName = cityRepository.findByName(name);
+        Optional<City> cityId = cityRepository.findByCityId(id);
+
+        if (cityName.isPresent() && cityId.isPresent()) {
+            Notification.show("City and City ID already exist", 3000, Notification.Position.BOTTOM_START);
+        } else if (cityName.isPresent()) {
+            Notification.show("City already exists", 3000, Notification.Position.BOTTOM_START);;
+        } else if (cityId.isPresent()) {
+            Notification.show("City ID already exists", 3000, Notification.Position.BOTTOM_START);
+        } else{
+            cityService.saveCity(event.getCity());
+            newForm.name.clear();
+            newForm.cityId.clear();
+            newForm.state.clear();
+            newFormDialog.close();
+            updateList();
+        }
     }
 
-    private void delete(CityForm.DeleteEvent event){
-        cityService.deleteCity(event.getCity());
-        updateList();
-        close();
-    }
-    private void close(){
-        newCityDialog.close();
+    private void editForm(City city){
+        if (city != null) {
+            cityForm.setCity(city);
+
+            if(originalCity == null){
+                originalCity = new City();
+            }
+
+            originalCity.setName(city.getName());
+            originalCity.setCityId(city.getCityId());
+
+            cityForm.addSaveListener(this::saveEdit);
+            cityForm.addDeleteListener(this::deleteEdit);
+            cityForm.addCloseListener(e -> closeEdit());
+
+            editDialog.setHeaderTitle("City");
+            editDialog.addClassName("titles");
+            editDialog.getFooter().add(cityForm.buttonLayout());
+            editDialog.add(cityForm);
+            editDialog.open();
+        } else{
+            closeEdit();
+        }
     }
 
-    private void saveEdit(CityForm.SaveEvent event){
-        cityService.saveCity(event.getCity());
-        updateList();
-        closeEdit();
+    private void saveEdit(CityForm.SaveEvent e){
+        String name = e.getCity().getName();
+        String id = e.getCity().getCityId();
+
+        boolean nameChanged = !name.equals(originalCity.getName());
+        boolean cityIdChanged = !id.equals(originalCity.getCityId());
+
+        Optional<City> cityName = cityRepository.findByName(name);
+        Optional<City> cityId = cityRepository.findByCityId(id);
+
+        if(nameChanged && cityName.isPresent()){
+            Notification.show("City already exist", 3000, Notification.Position.BOTTOM_START);
+        } else if(cityIdChanged && cityId.isPresent() ){
+            Notification.show("City Id already exist", 3000, Notification.Position.BOTTOM_START);
+        } else {
+            cityService.saveCity(e.getCity());
+            updateList();
+            closeEdit();
+        }
     }
 
     private void deleteEdit(CityForm.DeleteEvent event){
@@ -111,38 +171,29 @@ public class CityView extends VerticalLayout {
         editDialog.close();
     }
 
-    private void editForm(City city){
-        if (city != null) {
-            cityForm.setCity(city);
-
-            cityForm.addSaveListener(this::saveEdit);
-            cityForm.addDeleteListener(this::deleteEdit);
-            cityForm.addCloseListener(e -> closeEdit());
-
-            editDialog.setHeaderTitle("City");
-            editDialog.getFooter().add(cityForm.buttonLayout());
-            editDialog.add(cityForm);
-            editDialog.open();
-        } else{
-            closeEdit();
-        }
-    }
-    private void configureForm() {
-        cityForm = new CityForm(stateService.getAllStates());
-
-        cityForm.addSaveListener(this::save);
-        cityForm.addDeleteListener(this::delete);
-        cityForm.addCloseListener(e -> close());
-
-        newCityDialog.setHeaderTitle("City");
-        newCityDialog.getFooter().add(cityForm.buttonLayout());
-    }
 
     private void updateList() {
-        cityGrid.setItems(cityService.getAllCitiesByFilter(filterText.getValue()));
+        if(filterText.isEmpty()) {
+            List<City> cities = cityService.getAllCitiesByFilter(filterText.getEmptyValue());
+
+            List<City> sortedCities = cities.stream()
+                    .sorted(Comparator.comparing(City::getName))
+                    .toList();
+
+            cityGrid.setItems(sortedCities);
+        } else{
+            List<City> cities = cityService.getAllCitiesByFilter(filterText.getValue());
+
+            List<City> sortedCities = cities.stream()
+                    .sorted(Comparator.comparing(City::getName))
+                    .toList();
+
+            cityGrid.setItems(sortedCities);
+        }
     }
 
-    private HorizontalLayout getToolbar() {
+
+        private HorizontalLayout getToolbar() {
         Icon searchIcon = new Icon(VaadinIcon.SEARCH);
         filterText.setPlaceholder("Search");
         filterText.setClearButtonVisible(true);
@@ -151,9 +202,9 @@ public class CityView extends VerticalLayout {
         filterText.addValueChangeListener(e -> updateList());
 
         Button addCity  = new Button("Add City", e -> newFormDialog.open());
+        addCity.addClassName("add-city-button");
 
-        var toolbar = new HorizontalLayout(filterText, addCity);
-        toolbar.addClassName("CityToolBar");
+        HorizontalLayout toolbar = new HorizontalLayout(filterText, addCity);
         return toolbar;
     }
 
@@ -163,10 +214,12 @@ public class CityView extends VerticalLayout {
         cityGrid.addColumn(City::getCityId).setHeader("City Id");
         cityGrid.getColumns().forEach(col -> col.setAutoWidth(true));
 
-        List<City> city =cityService.getAllCitiesByFilter(filterText.getEmptyValue());
-        cityGrid.setItems(city);
-
-        cityGrid.asSingleSelect().addValueChangeListener(event -> editForm(event.getValue()));
-
+        List<City> city = cityService.getAllCitiesByFilter(filterText.getEmptyValue());
+        List<City> sortedCities = city.stream()
+                        .sorted(Comparator.comparing(City::getName))
+                        .toList();
+        cityGrid.setItems(sortedCities);
+        cityGrid.addItemClickListener(event -> editForm(event.getItem()));
+        cityGrid.addClassName("grid");
     }
 }
