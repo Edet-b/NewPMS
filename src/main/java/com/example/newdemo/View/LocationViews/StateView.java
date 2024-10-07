@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @CssImport("/generated/locationView.css")
 @Route(value = "stateView", layout = MainView.class)
 public class StateView extends VerticalLayout {
+
     Grid<State> stateGrid = new Grid<>(State.class);
     TextField filterText = new TextField();
     StateForm editStateForm  = new StateForm();
@@ -62,11 +63,14 @@ public class StateView extends VerticalLayout {
 
         Tab state = new Tab(new RouterLink("State", StateView.class));
         Tab city = new Tab(new RouterLink("City", CityView.class));
+        Tab phrase = new Tab(new RouterLink("Phrase", PhraseView.class));
 
         state.addClassName("location-items");
         city.addClassName("location-items");
+        phrase.addClassName("location-items");
 
-        Tabs locationTabs = new Tabs(state, city);
+
+        Tabs locationTabs = new Tabs(state, city, phrase);
         locationTabs.addClassName("location-tabs");
 
         locationTabs.setSelectedTab(state);
@@ -106,24 +110,28 @@ public class StateView extends VerticalLayout {
         Optional<State> stateName = stateRepository.findByName(name);
         Optional<State> stateId = stateRepository.findByStateId(id);
 
-        if (stateName.isPresent() && stateId.isPresent()) {
-            Notification.show("State and State ID already exist", 3000, Notification.Position.BOTTOM_START);
-        } else if (stateName.isPresent()) {
-            Notification.show("State already exists", 3000, Notification.Position.BOTTOM_START);
-        } else if (stateId.isPresent()) {
-            Notification.show("State ID already exists", 3000, Notification.Position.BOTTOM_START);
-        } else {
-            service.saveState(event.getState());
-            newStateForm.name.clear();
-            newStateForm.stateId.clear();
-            newStateDialog.close();
-            updateList();
+        if(name.isBlank() || id.isBlank()){
+            Notification.show("All fields are required", 1500, Notification.Position.BOTTOM_START);
+        } else{
+            if (stateName.isPresent() && stateId.isPresent()) {
+                Notification.show("State and State ID already exist", 1500, Notification.Position.BOTTOM_START);
+            } else if (stateName.isPresent()) {
+                Notification.show("State already exists", 1500, Notification.Position.BOTTOM_START);
+            } else if (stateId.isPresent()) {
+                Notification.show("State ID already exists", 1500, Notification.Position.BOTTOM_START);
+            }
+            else {
+                service.saveState(event.getState());
+                closeNew();
+            }
         }
     }
     private void closeNew(){
         newStateForm.name.clear();
         newStateForm.stateId.clear();
+        newStateForm.setState(new State());
         newStateDialog.close();
+        updateList();
     }
 
 
@@ -203,7 +211,7 @@ public class StateView extends VerticalLayout {
 
     private HorizontalLayout getToolbar() {
         Icon searchIcon = new Icon(VaadinIcon.SEARCH);
-        filterText.setPlaceholder("Search City");
+        filterText.setPlaceholder("Search");
         filterText.setClearButtonVisible(true);
         filterText.setSuffixComponent(searchIcon);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);

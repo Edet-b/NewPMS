@@ -1,5 +1,6 @@
 {
  "packageJsonDependencies": {
+  "@amcharts/amcharts5": "^5.8.4",
   "@polymer/polymer": "3.5.1",
   "@vaadin/a11y-base": "24.2.2",
   "@vaadin/accordion": "24.2.2",
@@ -64,7 +65,7 @@
   "@vaadin/vaadin-usage-statistics": "2.1.2",
   "@vaadin/vertical-layout": "24.2.2",
   "@vaadin/virtual-list": "24.2.2",
-  "chart.js": "^4.4.1",
+  "chart.js": "^4.4.2",
   "construct-style-sheets-polyfill": "3.1.0",
   "date-fns": "2.29.3",
   "lit": "2.8.0",
@@ -213,8 +214,10 @@
   "@vaadin/vertical-layout/theme/lumo/vaadin-vertical-layout.js",
   "@vaadin/virtual-list/theme/lumo/vaadin-virtual-list.js",
   "Frontend//generated/dashboard.css",
+  "Frontend//generated/finances.css",
   "Frontend//generated/locationView.css",
   "Frontend//generated/mainView.css",
+  "Frontend//generated/phrase.css",
   "Frontend//generated/propertyForm.css",
   "Frontend//generated/propertyView.css",
   "Frontend//generated/userForm.css",
@@ -260,12 +263,12 @@
  },
  "themeJsonContents": {},
  "entryScripts": [
-  "VAADIN/build/indexhtml-33a0cc25.js"
+  "VAADIN/build/indexhtml-0fb3d3e3.js"
  ],
  "webComponents": [],
  "cvdlModules": {},
- "packageJsonHash": "60175771cb7afc42dee8606ee50656b88a093ec54ef8889bdedfcb6ec70bc497",
+ "packageJsonHash": "0b8ac370d925b13bb80fd9950d7ad835b0d836fd89e946d026f73a78d6c36052",
  "indexHtmlGenerated": [
-  "  <script type=\"module\" crossorigin src=\"./VAADIN/build/indexhtml-33a0cc25.js\"></script>"
+  "  <script type=\"module\" crossorigin src=\"./VAADIN/build/indexhtml-0fb3d3e3.js\"></script>"
  ]
 }

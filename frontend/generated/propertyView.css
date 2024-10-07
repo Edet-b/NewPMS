@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
 
 .add-property, .reset-filters{
-   font-family: 'Josefin Sans', sans-serif;
+   font-family: 'Open Sans', sans-serif;
    margin-top: 35px;
    background-color: #34A853;
    color: white;
@@ -10,7 +10,7 @@
 }
 
 .save{
-    font-family: 'Josefin Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     background-color: #1434A4 !important;
     color: white !important;
@@ -18,7 +18,7 @@
 }
 
 .cancel{
-    font-family: 'Josefin Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     color: #FF1400;
     background-color: #EFEFEF;
@@ -27,21 +27,21 @@
 }
 
 .delete{
-    font-family: 'Josefin Sans', sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     color: white;
     background-color: #FF1400;
     margin-top:10px;
 }
 .grid::part(header-cell){
-    font-family: 'Josefin Sans',  sans-serif;
+    font-family: 'Open Sans',  sans-serif;
     font-weight: 500;
     font-size: 20px;
     color: #2F2F2F;
 }
 
 .grid::part(body-cell){
-    font-family: 'Josefin Sans',  sans-serif;
+    font-family: 'Open Sans',  sans-serif;
     font-weight: 200;
     font-size: 14px;
     color: #6B6B6B;
@@ -50,7 +50,7 @@
 }
 
 .grid::part(row):hover > ::part(body-cell){
-    font-family: 'Josefin Sans',  sans-serif;
+    font-family: 'Open Sans',  sans-serif;
     font-weight: 200;
     font-size: 14px;
     background-color:#A198E2;

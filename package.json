@@ -3,6 +3,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "dependencies": {
+    "@amcharts/amcharts5": "^5.8.4",
     "@polymer/polymer": "3.5.1",
     "@vaadin/a11y-base": "24.2.2",
     "@vaadin/accordion": "24.2.2",
@@ -67,7 +68,7 @@
     "@vaadin/vaadin-usage-statistics": "2.1.2",
     "@vaadin/vertical-layout": "24.2.2",
     "@vaadin/virtual-list": "24.2.2",
-    "chart.js": "^4.4.1",
+    "chart.js": "^4.4.2",
     "construct-style-sheets-polyfill": "3.1.0",
     "date-fns": "2.29.3",
     "lit": "2.8.0",
@@ -84,8 +85,8 @@
     "strip-css-comments": "5.0.0",
     "transform-ast": "2.4.4",
     "typescript": "5.1.6",
-    "vite": "4.4.11",
-    "vite-plugin-checker": "0.6.1",
+    "vite": "^4.5.2",
+    "vite-plugin-checker": "^0.6.4",
     "workbox-build": "7.0.0",
     "workbox-core": "7.0.0",
     "workbox-precaching": "7.0.0"
@@ -178,7 +179,7 @@
       "workbox-core": "7.0.0",
       "workbox-precaching": "7.0.0"
     },
-    "hash": "60175771cb7afc42dee8606ee50656b88a093ec54ef8889bdedfcb6ec70bc497"
+    "hash": "0b8ac370d925b13bb80fd9950d7ad835b0d836fd89e946d026f73a78d6c36052"
   },
   "overrides": {
     "@vaadin/bundles": "$@vaadin/bundles",
@@ -249,6 +250,7 @@
     "@vaadin/vaadin-themable-mixin": "$@vaadin/vaadin-themable-mixin",
     "date-fns": "$date-fns",
     "mobile-drag-drop": "$mobile-drag-drop",
-    "chart.js": "$chart.js"
+    "chart.js": "$chart.js",
+    "@amcharts/amcharts5": "$@amcharts/amcharts5"
   }
 }

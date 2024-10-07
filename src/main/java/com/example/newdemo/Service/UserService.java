@@ -2,15 +2,11 @@ package com.example.newdemo.Service;
 
 import com.example.newdemo.Entity.Users;
 import com.example.newdemo.Repository.UserRepository;
-import com.example.newdemo.View.UserViews.UserView;
+import com.example.newdemo.View.UserViews.ClientView;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.notification.Notification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -24,7 +20,7 @@ public class UserService {
 
     public void saveUsers(Users user){
         userRepository.save(user);
-        UI.getCurrent().navigate(UserView.class);
+        UI.getCurrent().navigate(ClientView.class);
     }
 
     public void deleteUser(Users user){
@@ -37,9 +33,21 @@ public class UserService {
         return users;
     }
 
-    public List<Users> getAllUsersByFilter(String filter){
-        List<Users> users = userRepository.findAll();
-        List<Users> usersFilter = userRepository.search(filter);
+    public List<Users> getAllClientsByFilter(String filter){
+        List<Users> users = userRepository.findUserByUserRoles(Users.userRoles.Client);
+        List<Users> usersFilter = userRepository.searchClientUsers(filter);
+        if(filter == null || filter.isEmpty()){
+            users.sort(Comparator.comparing(Users::getUpdatedAt).reversed());
+            return users;
+        }else{
+            usersFilter.sort(Comparator.comparing(Users::getUpdatedAt).reversed());
+            return  usersFilter;
+        }
+    }
+
+    public List<Users> getAllOtherUsersByFilter(String filter){
+        List<Users> users = userRepository.findAllUserRolesExceptClients();
+        List<Users> usersFilter = userRepository.searchOtherUsersButClient(filter);
         if(filter == null || filter.isEmpty()){
             users.sort(Comparator.comparing(Users::getUpdatedAt).reversed());
             return users;
@@ -71,7 +79,6 @@ public class UserService {
     public List<Users> findUserByUserRoleClient(){
         List<Users> clients = new ArrayList<>(4);
         clients = userRepository.findUserByUserRoles(Users.userRoles.Client);
-
         return clients;
     }
 
@@ -80,5 +87,13 @@ public class UserService {
         return  otherUserRolesExceptClients.stream().count();
     }
 
+    public List<Users> findUserNamesByClientUserRole() {
+        //        clients.forEach(user -> user.setFullName(user.getFirstName() + " " + user.getLastName()));
+        return userRepository.findUserByUserRoles(Users.userRoles.Client);
+    }
+
+    public List<Users> getAllUsersButClients(){
+        return userRepository.findAllUserRolesExceptClients();
+    }
 
 }

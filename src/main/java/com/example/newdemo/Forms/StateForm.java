@@ -5,12 +5,10 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
@@ -25,7 +23,7 @@ public class StateForm extends FormLayout {
     public Button delete = new Button("Delete");
     Button cancel = new Button("Discharge Changes");
 
-    Binder<State> stateBinder = new BeanValidationBinder<>(State.class);
+    Binder<State> stateBinder = new Binder<>(State.class);
     public StateForm(){
         stateBinder.bindInstanceFields(this);
         FormLayout stateForm = new FormLayout(

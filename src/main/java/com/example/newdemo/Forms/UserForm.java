@@ -7,7 +7,6 @@ import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -19,7 +18,8 @@ import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
@@ -30,39 +30,31 @@ import java.util.Set;
 
 @CssImport("/generated/userForm.css")
 public class UserForm extends FormLayout {
-
     TextField firstName = new TextField("First Name");
     TextField lastName = new TextField("Last Name");
     public EmailField email = new EmailField("Email");
     TextField phoneNumber = new TextField("Phone Number");
     TextField userState = new TextField("State");
     TextField userCity = new TextField("City");
-
     TextField street = new TextField("Street");
     IntegerField postalCode = new IntegerField("Postal Code");
-
     IntegerField houseNumber = new IntegerField("HouseNumber");
     public TextField username = new TextField("User Name");
-    public ComboBox<Users.userRoles> userRoles = new ComboBox<Users.userRoles>("User Roles");
-
-    public  ComboBox<State> state = new ComboBox<State>("State");
-
+    public ComboBox<Users.userRoles> userRoles = new ComboBox<>("User Roles");
+    public  ComboBox<State> state = new ComboBox<>("State");
     public CheckboxGroup<City> city = new CheckboxGroup<>("City");
+    public MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+    public Upload userImages = new Upload(buffer);
     public H3 locationAccess;
-
-    Binder<Users> userBinder = new BeanValidationBinder<>(Users.class);
+    Users originalData;
+   Binder<Users> userBinder = new Binder<>(Users.class);
 
     Button save = new Button("Save");
-
     Button discardChanges = new Button("Discard Changes");
-
-
     public Button delete = new Button("Delete");
-
     public PasswordField password = new PasswordField("Password");
 
     public UserForm(List<State> states, Set<City> cities){
-
         setSizeFull();
         state.setItems(states);
         state.setItemLabelGenerator(State::getName);
@@ -70,6 +62,7 @@ public class UserForm extends FormLayout {
         city.setItems(cities);
         city.setItemLabelGenerator(City::getName);
 
+        userImages.setAcceptedFileTypes("image/jpeg", "image/png");
         userRoles.setItems(Users.userRoles.values());
 
         userBinder.bindInstanceFields(this);
@@ -83,6 +76,7 @@ public class UserForm extends FormLayout {
         address.addClassName("sub-titles");
         userData.addClassName("sub-titles");
         locationAccess.addClassName("sub-titles");
+        password.addClassName("user-password");
 
         profileInfo.getStyle().set("margin-top", "0px");
 
@@ -108,18 +102,8 @@ public class UserForm extends FormLayout {
 
 
         FormLayout userFormLayout = new FormLayout(
-                profileInfo,
-                fLE,
-                pNu,
-                address,
-                uUS,
-                pH,
-                userData,
-                userDR,
-                locationAccess,
-                stateGeneral,
-                cityGeneral,
-                pass,
+                profileInfo, fLE, pNu, address, uUS, pH, userData, userDR,
+                locationAccess, stateGeneral, cityGeneral, pass, userImages,
                 buttonLayout()
         );
 
@@ -135,6 +119,27 @@ public class UserForm extends FormLayout {
         mainLayout.add(userFormLayout);
         mainLayout.addClassName("users-main-layout");
         add(mainLayout);
+    }
+    public void resetBackToOriginalData(Users user){
+        originalData = new Users();
+        originalData.setFirstName(user.getFirstName());
+        originalData.setLastName(user.getLastName());
+        originalData.setUsername(user.getUsername());
+        originalData.setPhoneNumber(user.getPhoneNumber());
+        originalData.setUserState(user.getUserState());
+        originalData.setUserCity(user.getUserCity());
+        originalData.setHouseNumber(user.getHouseNumber());
+        originalData.setPostalCode(user.getPostalCode());
+        originalData.setStreet(user.getStreet());
+        originalData.setUsername(user.getUsername());
+        originalData.setUserRoles(user.getUserRoles());
+        originalData.setState(user.getState());
+        originalData.setCity(user.getCity());
+        originalData.setUserImages(user.getUserImages());
+    }
+
+    public void resetForm(){
+        userBinder.readBean(originalData);
     }
 
     public HorizontalLayout buttonLayout() {
@@ -203,7 +208,5 @@ public class UserForm extends FormLayout {
     public Registration addCloseListener(ComponentEventListener<CloseEvent> listener){
         return addListener(CloseEvent.class, listener);
     }
-
-
 
 }

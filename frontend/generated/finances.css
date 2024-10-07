@@ -1,0 +1,29 @@
+.outstanding{
+    color: red;
+}
+
+.filter-text{
+    margin-top: 35px;
+    font-family:'Open Sans', sans-serif;
+    font-size: 14px;
+}
+
+.add-finance-button{
+    font-family: 'Open Sans', sans-serif;
+    margin-top: 38px;
+    background-color: #34A853;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+ }
+
+.finance-form-layout{
+      width: fit-content;
+      height: 100% !important;
+      margin-left: 10px;
+      margin-right: 10px;
+}
+
+.finance-main-layout{
+    width: 100% !important;
+}

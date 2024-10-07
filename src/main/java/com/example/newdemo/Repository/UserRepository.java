@@ -18,6 +18,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
             "or lower(c.username) like lower(concat('%', :searchTerm, '%'))")
     List<Users> search(@Param("searchTerm") String filter);
 
+
     @Query("select c from Users c where c.userRoles = :userRole")
     List<Users> searchByUserRoles(@Param("userRole") Users.userRoles userRole);
 
@@ -32,6 +33,23 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query("SELECT p FROM Users p WHERE p.userRoles = :userRoles AND p.userRoles = 'Client'")
     List<Users> findUserByUserRoles(@Param("userRoles") Users.userRoles roles);
 
+
+
     @Query("SELECT p FROM Users p WHERE p.userRoles <> 'Client'")
     List<Users> findAllUserRolesExceptClients();
+
+    @Query("SELECT u FROM Users u WHERE u.userRoles <> 'Client' " +
+            "AND (lower(u.firstName) LIKE lower(concat('%', :searchTerm, '%')) " +
+            "OR lower(u.lastName) LIKE lower(concat('%', :searchTerm, '%')) " +
+            "OR lower(u.username) LIKE lower(concat('%', :searchTerm, '%')))")
+    List<Users> searchOtherUsersButClient(@Param("searchTerm") String filter);
+
+    @Query("SELECT u FROM Users u WHERE u.userRoles = 'Client' " +
+            "AND (lower(u.firstName) LIKE lower(concat('%', :searchTerm, '%')) " +
+            "OR lower(u.lastName) LIKE lower(concat('%', :searchTerm, '%')) " +
+            "OR lower(u.username) LIKE lower(concat('%', :searchTerm, '%')))")
+    List<Users> searchClientUsers(@Param("searchTerm") String filter);
+
+
+
 }

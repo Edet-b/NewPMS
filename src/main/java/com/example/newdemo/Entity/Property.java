@@ -1,11 +1,8 @@
 package com.example.newdemo.Entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+//import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +13,9 @@ import java.util.Set;
 public class Property {
 
     public enum PropertyFeatures {
-        SwimmingPool("Swimming" + " pool"), Garden("Garden"), Garage("Garage");
+        SwimmingPool("Swimming pool"), Garden("Garden"), Garage("Garage");
 
-        private String name;
+        private final String name;
 
         PropertyFeatures(String name){
             this.name = name;
@@ -26,8 +23,8 @@ public class Property {
     }
 
     public enum PropertyServices {
-        Water("Water"), Electricity("Elctricity"), Gas("Gas"), Sewage("Sewage");
-        private String name;
+        Water("Water"), Electricity("Electricity"), Gas("Gas"), Sewage("Sewage");
+        private final String name;
 
         PropertyServices(String name){
             this.name = name;
@@ -35,18 +32,23 @@ public class Property {
     }
 
     public enum PropertyStatus {
-        Available("Available"), UnderOffer("Under" + " offer"), Sold("Sold");
-        private String name;
+        Available("Available"), UnderOffer("UnderOffer"), Sold("Sold");
+        private final String name;
 
         PropertyStatus(String name){
             this.name = name;
         }
+        public String getName() {
+            return name;
+        }
+
     }
 
     public enum PropertyType {
-        Land("Land"), SemiDetachedDuplex("Semi" + " detached" +" duplex"), DetachedDuplex("Detached" + " duplex"), Bungalow("Bungalow");
+        Land("Land"), SemiDetachedDuplex("Semi-detached duplex"), DetachedDuplex("Detached duplex"), Bungalow("Bungalow");
 
-        private String name;
+        private final String name;
+
         PropertyType(String name){
             this.name = name;
         }
@@ -57,13 +59,17 @@ public class Property {
     @GeneratedValue
     private Long id;
 
-    @NotNull
+//    @NotNull
     @ManyToOne
     private State state;
 
-    @NotNull
+//    @NotNull
     @ManyToOne
     private City city;
+
+//    @NotNull
+    @ManyToOne
+    private Phrases phrases;
 
     @Column(nullable = false)
     private String street;
@@ -91,25 +97,25 @@ public class Property {
     @Enumerated(EnumType.STRING)
     private Set<Property.PropertyFeatures> features;
 
-    private String owners;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private Users owners;
 
     private String description;
 
-    @NotNull
+//    @NotNull
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PropertyImage> propertyImages = new ArrayList<>();
 
+    public Property() {}
 
-    public Property() {
-    }
-
-    public Property(Long id, State state, City city, String street,
+    public Property(Long id, State state, City city, Phrases phrases, String street,
                     PropertyType type, int lotSize, double price, PropertyStatus status,
                     String description, List<PropertyImage> propertyImages) {
         this.id = id;
         this.state = state;
         this.city = city;
+        this.phrases = phrases;
         this.street = street;
         this.type = type;
         this.lotSize = lotSize;
@@ -119,12 +125,13 @@ public class Property {
         this.propertyImages = propertyImages;
     }
 
-    public Property(Long id, State state, City city, String street,
+    public Property(Long id, State state, City city, Phrases phrases, String street,
                     PropertyType type, int lotSize, double price, PropertyStatus status,
-                    String owners, String description, List<PropertyImage> propertyImages) {
+                    Users owners, String description, List<PropertyImage> propertyImages) {
         this.id = id;
         this.state = state;
         this.city = city;
+        this.phrases = phrases;
         this.street = street;
         this.type = type;
         this.lotSize = lotSize;
@@ -134,7 +141,8 @@ public class Property {
         this.description = description;
         this.propertyImages = propertyImages;
     }
-    public Property(Long id, State state, City city, String street,
+
+    public Property(Long id, State state, City city, Phrases phrases, String street,
                     PropertyType type, int lotSize, int noOfBedrooms,
                     int noOfBathrooms, double price, PropertyStatus status,
                     Set<PropertyServices> services, Set<PropertyFeatures> features,
@@ -142,6 +150,7 @@ public class Property {
         this.id = id;
         this.state = state;
         this.city = city;
+        this.phrases = phrases;
         this.street = street;
         this.type = type;
         this.lotSize = lotSize;
@@ -155,16 +164,15 @@ public class Property {
         this.propertyImages = propertyImages;
     }
 
-
-
-    public Property(Long id, State state, City city, String street,
+    public Property(Long id, State state, City city, Phrases phrases, String street,
                     Property.PropertyType type, int lotSize, int noOfBedrooms,
                     int noOfBathrooms,double price, Property.PropertyStatus status,
                     Set<Property.PropertyServices> services, Set<Property.PropertyFeatures> features,
-                    String owners, String description, List<PropertyImage> propertyImages) {
+                    Users owners, String description, List<PropertyImage> propertyImages) {
         this.id = id;
         this.state = state;
         this.city = city;
+        this.phrases = phrases;
         this.street = street;
         this.type = type;
         this.lotSize = lotSize;
@@ -178,7 +186,6 @@ public class Property {
         this.description = description;
         this.propertyImages = propertyImages;
     }
-
 
     public void setId(Long id) {
         this.id = id;
@@ -191,6 +198,8 @@ public class Property {
     public void setCity(City city) {
         this.city = city;
     }
+
+    public void setPhrases(Phrases phrases) {this.phrases = phrases;}
 
     public void setStreet(String street) {
         this.street = street;
@@ -228,7 +237,7 @@ public class Property {
         this.features = features;
     }
 
-    public void setOwners(String owners) {
+    public void setOwners(Users owners) {
         this.owners = owners;
     }
 

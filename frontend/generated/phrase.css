@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+
+.filter-text{
+    margin-top: 35px;
+    font-family:'Open Sans', sans-serif;
+    font-size: 14px;
+}
+.add-phrase-button{
+ font-family: 'Open Sans', sans-serif;
+    margin-top: 38px;
+    background-color: #34A853;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+}
+.phrase-form-layout{
+      width: fit-content;
+      height: 100% !important;
+      margin-left: 10px;
+      margin-right: 10px;
+}
+
+.phrase-main-layout{
+    width: 100% !important;
+}

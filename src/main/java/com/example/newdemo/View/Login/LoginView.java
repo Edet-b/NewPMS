@@ -19,7 +19,7 @@ import java.util.Optional;
 
 
 //@CssImport("/generated/login.css")
-@Route(" ")
+//@Route(" ")
 public class LoginView extends VerticalLayout {
 
     @Autowired

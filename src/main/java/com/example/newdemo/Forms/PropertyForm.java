@@ -1,18 +1,14 @@
 package com.example.newdemo.Forms;
 
-import com.example.newdemo.Entity.City;
-import com.example.newdemo.Entity.Property;
-import com.example.newdemo.Entity.State;
+import com.example.newdemo.Entity.*;
 import com.vaadin.flow.component.ComponentEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.H6;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,13 +18,9 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.shared.Registration;
 import lombok.Getter;
-
-import java.text.Normalizer;
-import java.util.Arrays;
 import java.util.List;
 
 @CssImport("/generated/propertyForm.css")
@@ -36,29 +28,27 @@ public class PropertyForm extends FormLayout {
 
     public ComboBox<State> state = new ComboBox<>("State");
     public ComboBox<City> city = new ComboBox<>("City");
+    public ComboBox<Users> owners = new ComboBox<>("Owner");
     public TextField street = new TextField("Street");
     public ComboBox<Property.PropertyType> type = new ComboBox<>("Property Type");
+    public ComboBox<Phrases> phrase = new ComboBox<>("Phrase");
     public IntegerField lotSize = new IntegerField("Lot Size");
     public IntegerField noOfBedrooms = new IntegerField("No of Bedrooms");
     public IntegerField noOfBathrooms = new IntegerField("No of Bathrooms");
     public NumberField price = new NumberField("Price");
-    public ComboBox<String> owners = new ComboBox<>("Clients");
     public ComboBox<Property.PropertyStatus> status = new ComboBox<>("Status");
     public CheckboxGroup<Property.PropertyServices> services = new CheckboxGroup<>("Services");
     public CheckboxGroup<Property.PropertyFeatures> features = new CheckboxGroup<>("Additional Features");
     public TextArea description = new TextArea("Description");
     public MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
     public Upload propertyImages = new Upload(buffer);
-
-
-    Binder<Property> propertyBinder = new BeanValidationBinder<>(Property.class);
-
+    Binder<Property> propertyBinder = new Binder<>(Property.class);
     Button save = new Button("Save");
     public Button delete = new Button("Delete");
     Button cancel = new Button("Discharge Changes");
 
-
-    public PropertyForm(List<State> states, List<City> cities){
+    public PropertyForm(List<State> states, List<City> cities,
+                        List<Users> users, List<Phrases> phrases){
 
         state.setItems(states);
         state.setItemLabelGenerator(State::getName);
@@ -66,42 +56,43 @@ public class PropertyForm extends FormLayout {
         city.setItems(cities);
         city.setItemLabelGenerator(City::getName);
 
+        phrase.setItems(phrases);
+        phrase.setItemLabelGenerator(Phrases::getName);
+
+        owners.setItems(users);
+        owners.setItemLabelGenerator(Users::toString);
+
         status.setItems(Property.PropertyStatus.values());
         type.setItems(Property.PropertyType.values());
 
         services.setItems(Property.PropertyServices.values());
         features.setItems(Property.PropertyFeatures.values());
-
         description.setHeightFull();
-
         propertyImages.setAcceptedFileTypes("image/jpeg", "image/png");
-
-        List<String> items = Arrays.asList("Edet Blessing", "Agun Dayo", "Yahaya Yusuf",
-                "Dabirichi Soribe");
-        owners.setItems(items);
 
 
         propertyBinder.bindInstanceFields(this);
 
-        FormLayout sCS = new FormLayout(state, city, street);
+        FormLayout sCS = new FormLayout(state, city, phrase);
+        FormLayout streetFormLayout = new FormLayout(street);
         FormLayout tLP = new FormLayout(type, lotSize, price);
         FormLayout nNS = new FormLayout(noOfBedrooms, noOfBathrooms, status);
         FormLayout clients = new FormLayout(owners);
 
         sCS.setResponsiveSteps(new ResponsiveStep("0", 3));
+        streetFormLayout.setResponsiveSteps(new ResponsiveStep("0", 3));
         tLP.setResponsiveSteps(new ResponsiveStep("0", 3));
         nNS.setResponsiveSteps(new ResponsiveStep("0", 3));
         clients.setResponsiveSteps(new ResponsiveStep("0", 3));
 
-
         sCS.setSizeFull();
+        streetFormLayout.setSizeFull();
         tLP.setSizeFull();
         nNS.setSizeFull();
 
         H6 location = new H6("LOCATION");
         H6 propertyDetails = new H6("PROPERTY DETAILS");
         location.getStyle().set("margin-top", "8px");
-
 
         location.addClassName("sub-titles-properties");
         propertyDetails.addClassName("sub-titles-properties");
@@ -110,6 +101,7 @@ public class PropertyForm extends FormLayout {
         FormLayout propertyFormLayout = new FormLayout(
                 location,
                 sCS,
+                streetFormLayout,
                 propertyDetails,
                 tLP,
                 nNS,
@@ -121,7 +113,7 @@ public class PropertyForm extends FormLayout {
         propertyFormLayout.setResponsiveSteps(new ResponsiveStep("0", 1));
         propertyFormLayout.setSizeFull();
 
-        propertyFormLayout.getElement().getStyle().set("width", "fit-content");
+        propertyFormLayout.getStyle().set("width", "fit-content");
 
         propertyFormLayout.addClassName("property-form-layout");
 
@@ -150,8 +142,6 @@ public class PropertyForm extends FormLayout {
 
         return new HorizontalLayout(cancel, delete, save);
     }
-
-
 
     private void validateAndSave(){
         if(propertyBinder.isValid()){

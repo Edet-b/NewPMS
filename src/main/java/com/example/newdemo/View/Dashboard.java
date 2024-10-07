@@ -1,40 +1,49 @@
 package com.example.newdemo.View;
 
 import com.example.newdemo.Entity.Users;
+import com.example.newdemo.Service.FinanceService;
 import com.example.newdemo.Service.PropertyService;
 import com.example.newdemo.Service.UserService;
-import com.example.newdemo.View.MainView;
 import com.vaadin.flow.component.HtmlComponent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JavaScript;
+import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.text.DecimalFormat;
 import java.util.List;
 
 
 @CssImport("/generated/dashboard.css")
-@Route(value = "dashboard", layout = MainView.class)
+@Route(value = " ", layout = MainView.class)
 public class Dashboard extends VerticalLayout {
 
     PropertyService propertyService;
 
     UserService userService;
+    FinanceService financeService;
 
     @Autowired
-    public Dashboard(PropertyService propertyService, UserService userService){
+    public Dashboard(PropertyService propertyService, UserService userService, FinanceService financeService){
         this.propertyService = propertyService;
         this.userService = userService;
+        this.financeService = financeService;
 
         VerticalLayout mainLayout = new VerticalLayout();
 
         HorizontalLayout topLayout = new HorizontalLayout();
         HorizontalLayout topLayoutTwo = new HorizontalLayout();
+        HorizontalLayout topLayoutThree = new HorizontalLayout();
 
         //Card One
         VerticalLayout cardForAllProperties = new VerticalLayout();
@@ -178,19 +187,101 @@ public class Dashboard extends VerticalLayout {
 
         cardForRecentCustomers.add(recentCustomerText, recentClientsLayout, linkToUsersPage);
 
+
+        //card Eight [Total Amount]
+        VerticalLayout cardForTotalAmount = new VerticalLayout();
+        cardForStaff.addClassNames("card-for-amount", "total-amount");
+
+        HorizontalLayout totalAmountText = new HorizontalLayout();
+        totalAmountText.add(new Text("Total Properties Bought"));
+
+        Double totalAmountCount = propertyService.getAllPropertyPrices();
+        String nairaSymbol = "\u20A6";
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
+        String formattedAmount = decimalFormat.format(totalAmountCount);
+
+        Span totalAmountSpan = new Span(nairaSymbol + formattedAmount);
+        totalAmountSpan.addClassName("text-of-amount");
+        totalAmountSpan.getStyle().set("font-size", "35px");
+
+
+        HorizontalLayout totalAmountCounts = new HorizontalLayout();
+        totalAmountCounts.addClassName("total-amounts");
+        totalAmountCounts.getStyle().set("font-size", "35px");
+        totalAmountCounts.getStyle().set("color", "blue");
+
+        totalAmountCounts.add(totalAmountSpan);
+        cardForTotalAmount.getStyle().set("background-color", "white");
+
+        cardForTotalAmount.add(totalAmountCounts, totalAmountText);
+
+        //card Nine [Total Outstanding Amount]
+        VerticalLayout cardForTotalOutstanding = new VerticalLayout();
+        cardForTotalOutstanding.addClassNames("card-for-amount", "total-amount");
+
+        HorizontalLayout totalOutstandingText = new HorizontalLayout();
+        totalOutstandingText.add(new Text("Total Outstanding Amount"));
+
+        Double totalOutstandingCount = propertyService.getAllPropertyPrices() - financeService.getTotalAmountPaid();
+        String formattedAmountOutstanding = decimalFormat.format(totalOutstandingCount);
+
+        Span totalOutstandingSpan = new Span(nairaSymbol + formattedAmountOutstanding);
+        totalOutstandingSpan.addClassName("text-of-amount");
+        totalOutstandingSpan.getStyle().set("font-size", "35px");
+
+        HorizontalLayout totalOutstandingCounts = new HorizontalLayout();
+        totalOutstandingCounts.addClassName("total-amounts");
+        totalOutstandingCounts.getStyle().set("color", "red");
+        totalOutstandingCounts.getStyle().set("font-size", "35px");
+
+        totalOutstandingCounts.add(totalOutstandingSpan);
+        cardForTotalOutstanding.getStyle().set("background-color", "white");
+
+        cardForTotalOutstanding.add(totalOutstandingCounts, totalOutstandingText);
+
+
+        //card Ten [Total Amount Paid]
+        VerticalLayout cardForTotalAmountPaid = new VerticalLayout();
+        cardForTotalAmountPaid.addClassNames("card-for-amount", "total-amount");
+
+        HorizontalLayout totalAmountPaidText = new HorizontalLayout();
+        totalAmountPaidText.add(new Text("Total Amount Paid"));
+
+        Double totalAmountPaidCount = financeService.getTotalAmountPaid();
+        String formattedAmountPaid = decimalFormat.format(totalAmountPaidCount);
+
+        Span totalAmountPaidSpan = new Span(nairaSymbol + formattedAmountPaid);
+        totalAmountPaidSpan.addClassName("text-of-amount");
+        totalAmountPaidSpan.getStyle().set("font-size", "35px");
+
+        HorizontalLayout totalAmountPaidCounts = new HorizontalLayout();
+        totalAmountPaidCounts.addClassName("total-amounts");
+        totalAmountPaidCounts.getStyle().set("font-size", "35px");
+        totalAmountPaidCounts.getStyle().set("color", "green");
+
+        totalAmountPaidCounts.add(totalAmountPaidSpan);
+        cardForTotalAmountPaid.getStyle().set("background-color", "white");
+
+        cardForTotalAmountPaid.add(totalAmountPaidCounts, totalAmountPaidText);
+
+        //compilation
         topLayout.add(cardForAllProperties, cardForAllLandedProperties, cardForResidentialProperties, cardForClients, cardForStaff);
         topLayoutTwo.add(cardForFinancialOverview, cardForRecentCustomers);
+        topLayoutThree.add(cardForTotalAmount, cardForTotalOutstanding, cardForTotalAmountPaid);
+
 
         topLayout.setWidthFull();
         topLayoutTwo.setWidthFull();
+        topLayoutThree.setWidthFull();
         mainLayout.setWidthFull();
 
         topLayout.addClassName("overall-layout");
         topLayoutTwo.addClassName("overall-layout");
+        topLayoutThree.addClassName("overall-layout");
         mainLayout.addClassName("overall-layout");
 
         getStyle().set("background-color", "#F7F5F5");
-        mainLayout.add(topLayout, topLayoutTwo);
+        mainLayout.add(topLayout, topLayoutTwo, topLayoutThree);
         add(mainLayout);
     }
 }

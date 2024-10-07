@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @CssImport("/generated/locationView.css")
 @Route(value = "cityView", layout = MainView.class)
@@ -53,6 +52,11 @@ public class CityView extends VerticalLayout {
 
         newForm = new CityForm(stateService.getAllStates());
         newForm.setCity(new City());
+        List<State> states = stateService.getAllStates();
+        List<State> sortedStates = states.stream()
+                .sorted(Comparator.comparing(State::getName))
+                .toList();
+        newForm.state.setItems(sortedStates);
         newForm.delete.setVisible(false);
         newForm.addSaveListener(this::saveNew);
         newForm.addCloseListener(e -> closeNew());
@@ -65,11 +69,13 @@ public class CityView extends VerticalLayout {
 
         Tab state = new Tab(new RouterLink("State", StateView.class));
         Tab city = new Tab(new RouterLink("City", CityView.class));
+        Tab phrase = new Tab(new RouterLink("Phrase", PhraseView.class));
 
         state.addClassName("location-items");
         city.addClassName("location-items");
+        phrase.addClassName("location-items");
 
-        Tabs locationTabs = new Tabs(state, city);
+        Tabs locationTabs = new Tabs(state, city, phrase);
         locationTabs.addClassName("location-tabs");
 
         locationTabs.setSelectedTab(city);
@@ -88,7 +94,9 @@ public class CityView extends VerticalLayout {
         newForm.name.clear();
         newForm.cityId.clear();
         newForm.state.clear();
+        newForm.setCity(new City());
         newFormDialog.close();
+        updateList();
     }
 
     private void saveNew(CityForm.SaveEvent event){
@@ -99,19 +107,19 @@ public class CityView extends VerticalLayout {
         Optional<City> cityName = cityRepository.findByName(name);
         Optional<City> cityId = cityRepository.findByCityId(id);
 
-        if (cityName.isPresent() && cityId.isPresent()) {
-            Notification.show("City and City ID already exist", 3000, Notification.Position.BOTTOM_START);
-        } else if (cityName.isPresent()) {
-            Notification.show("City already exists", 3000, Notification.Position.BOTTOM_START);;
-        } else if (cityId.isPresent()) {
-            Notification.show("City ID already exists", 3000, Notification.Position.BOTTOM_START);
+        if(name.isBlank() || id.isBlank()){
+            Notification.show("All fields are required", 1500, Notification.Position.BOTTOM_START);
         } else{
-            cityService.saveCity(event.getCity());
-            newForm.name.clear();
-            newForm.cityId.clear();
-            newForm.state.clear();
-            newFormDialog.close();
-            updateList();
+            if (cityName.isPresent() && cityId.isPresent()) {
+                Notification.show("City and City ID already exist", 1500, Notification.Position.BOTTOM_START);
+            } else if (cityName.isPresent()) {
+                Notification.show("City already exists", 1500, Notification.Position.BOTTOM_START);
+            } else if (cityId.isPresent()) {
+                Notification.show("City ID already exists", 1500, Notification.Position.BOTTOM_START);
+            } else{
+                cityService.saveCity(event.getCity());
+              closeNew();
+            }
         }
     }
 
@@ -151,23 +159,22 @@ public class CityView extends VerticalLayout {
         Optional<City> cityId = cityRepository.findByCityId(id);
 
         if(nameChanged && cityName.isPresent()){
-            Notification.show("City already exist", 3000, Notification.Position.BOTTOM_START);
+            Notification.show("City already exist", 1500, Notification.Position.BOTTOM_START);
         } else if(cityIdChanged && cityId.isPresent() ){
-            Notification.show("City Id already exist", 3000, Notification.Position.BOTTOM_START);
+            Notification.show("City Id already exist", 1500, Notification.Position.BOTTOM_START);
         } else {
             cityService.saveCity(e.getCity());
-            updateList();
             closeEdit();
         }
     }
 
     private void deleteEdit(CityForm.DeleteEvent event){
         cityService.deleteCity(event.getCity());
-        updateList();
         closeEdit();
     }
 
     private void closeEdit(){
+        updateList();
         editDialog.close();
     }
 
@@ -191,21 +198,17 @@ public class CityView extends VerticalLayout {
             cityGrid.setItems(sortedCities);
         }
     }
-
-
         private HorizontalLayout getToolbar() {
-        Icon searchIcon = new Icon(VaadinIcon.SEARCH);
         filterText.setPlaceholder("Search");
         filterText.setClearButtonVisible(true);
-        filterText.setSuffixComponent(searchIcon);
+        filterText.setSuffixComponent(new Icon(VaadinIcon.SEARCH));
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
         filterText.addValueChangeListener(e -> updateList());
 
         Button addCity  = new Button("Add City", e -> newFormDialog.open());
         addCity.addClassName("add-city-button");
 
-        HorizontalLayout toolbar = new HorizontalLayout(filterText, addCity);
-        return toolbar;
+            return new HorizontalLayout(filterText, addCity);
     }
 
     private void configureGrid() {

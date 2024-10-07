@@ -30,7 +30,7 @@ public class CityForm extends FormLayout {
     Button cancel = new Button("Discharge Changes");
     public Button delete = new Button("Delete");
 
-    Binder<City> cityBinder = new BeanValidationBinder<>(City.class);
+    Binder<City> cityBinder = new Binder<>(City.class);
 
     public CityForm(List<State> states){
         state.setItems(states);

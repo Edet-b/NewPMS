@@ -2,8 +2,10 @@ package com.example.newdemo.Service;
 
 
 import com.example.newdemo.Entity.State;
+import com.example.newdemo.Entity.Users;
 import com.example.newdemo.Repository.CityRepository;
 import com.example.newdemo.Entity.City;
+import com.example.newdemo.Repository.PropertyRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -15,9 +17,11 @@ import java.util.stream.Collectors;
 public class CityService {
 
     CityRepository cityRepository;
+    PropertyRepository propertyRepository;
 
-    public CityService(CityRepository cityRepository){
+    public CityService(CityRepository cityRepository, PropertyRepository propertyRepository){
         this.cityRepository = cityRepository;
+        this.propertyRepository = propertyRepository;
     }
 
     public void saveCity(City city){
@@ -51,5 +55,9 @@ public class CityService {
 
     public List<City> getAllCitiesByStateByList(State state){
         return cityRepository.findByStates(state);
+    }
+
+    public List<City> findAllCitiesOfPropertyByUser(Users user){
+        return propertyRepository.findAllCityByUser(user);
     }
 }

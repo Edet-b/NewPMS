@@ -3,15 +3,13 @@ package com.example.newdemo.View;
 import com.example.newdemo.View.FinanceViews.FinancesView;
 import com.example.newdemo.View.LocationViews.StateView;
 import com.example.newdemo.View.PropertyViews.PropertyView;
-import com.example.newdemo.View.UserViews.UserView;
+import com.example.newdemo.View.UserViews.ClientView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
@@ -39,7 +37,7 @@ public class MainView extends AppLayout {
         SideNavItem location = new SideNavItem("Location", StateView.class, VaadinIcon.LOCATION_ARROW.create());
         SideNavItem property = new SideNavItem("Properties", PropertyView.class, VaadinIcon.WORKPLACE.create());
 
-        SideNavItem users = new SideNavItem("Users", UserView.class, VaadinIcon.USERS.create());
+        SideNavItem users = new SideNavItem("Users", ClientView.class, VaadinIcon.USERS.create());
         SideNavItem finances = new SideNavItem("Finances", FinancesView.class, VaadinIcon.BAR_CHART.create());
 
         nav.addItem(dashboard, location, property, users, finances);

@@ -1,17 +1,14 @@
 package com.example.newdemo.View.PropertyViews;
 
-import com.example.newdemo.Entity.City;
-import com.example.newdemo.Entity.Property;
-import com.example.newdemo.Entity.PropertyImage;
-import com.example.newdemo.Entity.State;
+import com.example.newdemo.Entity.*;
 import com.example.newdemo.Forms.PropertyForm;
-import com.example.newdemo.Service.CityService;
-import com.example.newdemo.Service.ImageService;
-import com.example.newdemo.Service.PropertyService;
-import com.example.newdemo.Service.StateService;
+import com.example.newdemo.Forms.createNewUserForm;
+import com.example.newdemo.Service.*;
 import com.example.newdemo.View.MainView;
+import com.example.newdemo.View.UserViews.ClientFormView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -26,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Route(value = "PropertyFormView", layout = MainView.class)
@@ -33,25 +31,38 @@ public class PropertyFormView extends VerticalLayout {
     StateService stateService;
     CityService cityService;
     PropertyService propertyService;
+    UserService userService;
+    PhraseService phraseService;
     ImageService imageService;
     PropertyForm propertyForm;
     PropertyView propertyView;
-    Button backToProperty = new Button("Back To Property");
     byte[] resizedImageData;
+    List<byte[]> resizedList = new ArrayList<>();
+    createNewUserForm newUserDialog = new createNewUserForm();
+    public Dialog createNewUser = new Dialog();
+    Button backToProperty = new Button("Back To Property");
     @Autowired
-    public PropertyFormView(StateService stateService,  CityService cityService,
-                            PropertyService propertyService, ImageService imageService){
+    public PropertyFormView(StateService stateService,  CityService cityService, PropertyService propertyService,
+                            ImageService imageService, UserService userService, PhraseService phraseService){
         this.stateService = stateService;
         this.cityService = cityService;
         this.propertyService = propertyService;
         this.imageService = imageService;
+        this.userService = userService;
+        this.phraseService = phraseService;
+
+        createNewUser.setHeaderTitle("New User");
+        createNewUser.getFooter().add(newUserDialog.createNewUserButtonLayout());
+        createNewUser.add(newUserDialog);
+        newUserDialog.cancel.addClickListener(e -> createNewUser.close());
+        newUserDialog.create.addClickListener(e -> createButton());
 
 
-        propertyView = new PropertyView(stateService, cityService, propertyService);
+        propertyView = new PropertyView(stateService, cityService, propertyService, userService, imageService, phraseService);
         propertyView.addProperty.setVisible(false);
 
-        propertyForm = new PropertyForm(stateService.getAllStates(),
-                cityService.getAllCities());
+        propertyForm = new PropertyForm(stateService.getAllStates(), cityService.getAllCities(),
+                userService.findUserNamesByClientUserRole(), phraseService.getAllPhrases());
         propertyForm.setProperty(new Property());
         propertyForm.delete.setVisible(false);
         propertyForm.owners.setVisible(false);
@@ -63,14 +74,16 @@ public class PropertyFormView extends VerticalLayout {
             try{
                 byte[] originalImageData = inputStream.readAllBytes();
 
-                int targetWidth = 100;
-                int targetHeight = 100;
+                int targetWidth = 50;
+                int targetHeight = 50;
                 resizedImageData = resizeImage(originalImageData, targetWidth, targetHeight);
-
-            } catch (IOException e) {
+                resizedList.add(resizedImageData);
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
         propertyForm.addSaveListener(this::save);
         propertyForm.addCloseListener(e -> close());
         propertyForm.setWidthFull();
@@ -84,12 +97,47 @@ public class PropertyFormView extends VerticalLayout {
 
         add(backToProperty, propertyForm);
 
+        propertyForm.state.setItems(sortedState());
+        propertyForm.state.setItemLabelGenerator(State::getName);
+
+        propertyForm.city.setItems(sortedCity());
+        propertyForm.city.setItemLabelGenerator(City::getName);
+
+        propertyForm.phrase.setItems(sortedPhrase());
+        propertyForm.phrase.setItemLabelGenerator(Phrases::getName);
+
+        List<Users> users = userService.findUserNamesByClientUserRole();
+        List<Users> sortedNames = users.stream()
+                .sorted(Comparator.comparing(Users::toString))
+                .toList();
+
+        propertyForm.owners.setItems(sortedNames);
+        propertyForm.owners.setItemLabelGenerator(Users::toString);
+        propertyForm.owners.setClearButtonVisible(true);
+        propertyForm.owners.addCustomValueSetListener(e -> {
+                    if (!e.getDetail().equals(sortedNames.toString())) {
+                        createNewUser.open();
+                    }
+                });
+
         propertyForm.city.setEnabled(false);
+        propertyForm.phrase.setEnabled(false);
 
         propertyForm.state.addValueChangeListener(e -> {
             State selectedState = e.getValue();
             getCityListForState(selectedState);
             propertyForm.city.setEnabled(true);
+        });
+
+        propertyForm.city.addValueChangeListener(e -> {
+            City selectedCity = e.getValue();
+            getPhraseByCity(selectedCity);
+            propertyForm.phrase.setEnabled(true);
+        });
+
+        propertyForm.phrase.addValueChangeListener(e -> {
+            Phrases selectedPhrase = e.getValue();
+            System.out.println(selectedPhrase);
         });
 
         propertyForm.type.addValueChangeListener(event -> {
@@ -109,13 +157,8 @@ public class PropertyFormView extends VerticalLayout {
 
         propertyForm.status.addValueChangeListener(e ->{
             String status = e.getValue().toString();
-            if("Under Offer".equals(status)){
-                propertyForm.owners.setVisible(true);
-            } else{
-                propertyForm.owners.setVisible(false);
-            }
+            propertyForm.owners.setVisible("UnderOffer".equals(status) || "Sold".equals(status));
         });
-
         updateList();
     }
 
@@ -123,25 +166,31 @@ public class PropertyFormView extends VerticalLayout {
         propertyView.propertyGrid.setItems(propertyService.getAllProperties());
     }
 
+    private void createButton(){
+        newUserDialog.create.addClickListener(e -> {
+            createNewUser.close();
+            UI.getCurrent().navigate(ClientFormView.class);
+        });
+    }
+
     public void save(PropertyForm.SaveEvent event){
-
         Property property = event.getProperty();
-        PropertyImage propertyImage = new PropertyImage();
-        propertyImage.setProperty(property);
-        propertyImage.setPropertyImages(resizedImageData);
-        property.getPropertyImages().add(propertyImage);
+        property.setPhrases(propertyForm.phrase.getValue());
 
-        propertyService.saveProperty(property);
-        imageService.saveImageToDatabase(property, resizedImageData);
+        for (byte[] resizedImageData : resizedList){
+
+            PropertyImage propertyImages = new PropertyImage();
+            propertyImages.setProperty(property);
+            propertyImages.setPropertyImages(resizedImageData);
+            property.getPropertyImages().add(propertyImages);
+        }
+        propertyService.saveProperty(event.getProperty());
         updateList();
         close();
     }
-
     public void close(){
         UI.getCurrent().navigate(PropertyView.class);
     }
-
-
 
     public static byte[] resizeImage(byte[] imageData, int targetWidth, int targetHeight) throws IOException {
         InputStream inputStream = new ByteArrayInputStream(imageData);
@@ -164,4 +213,30 @@ public class PropertyFormView extends VerticalLayout {
         propertyForm.city.setItemLabelGenerator(City::getName);
     }
 
+    private void getPhraseByCity(City city){
+        List<Phrases> phraseByCity = phraseService.getAllPhrasesByCity(city);
+        propertyForm.phrase.setItems(phraseByCity);
+        propertyForm.phrase.setItemLabelGenerator(Phrases::getName);
     }
+
+    private List<State> sortedState(){
+        List<State> states = stateService.getAllStates();
+        return states.stream()
+                .sorted(Comparator.comparing(State::getName))
+                .toList();
+    }
+
+    private List<City> sortedCity(){
+        List<City> cities = cityService.getAllCities();
+        return cities.stream()
+                .sorted(Comparator.comparing(City::getName))
+                .toList();
+    }
+
+    private List<Phrases> sortedPhrase(){
+        List<Phrases> phrases = phraseService.getAllPhrases();
+        return phrases.stream()
+                .sorted(Comparator.comparing(Phrases::getName))
+                .toList();
+    }
+}

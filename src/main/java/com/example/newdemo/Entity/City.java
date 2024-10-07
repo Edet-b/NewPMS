@@ -20,8 +20,7 @@ public class City {
 
     private String cityId;
 
-    public City() {
-    }
+    public City() {}
 
     public City(Long id, State state, String name, String cityId) {
         this.id = id;
